@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <ApplicationIcon />
+    <OutputType>Exe</OutputType>
+    <StartupObject />
+    <LangVersion>8.0</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NESSharp.Common\NESSharp.Common.csproj" />
+    <ProjectReference Include="..\NESSharp.Core\NESSharp.Core.csproj" />
+    <ProjectReference Include="..\NESSharp.Lib.SceneManager\NESSharp.Lib.SceneManager.csproj" />
+    <ProjectReference Include="..\NESSharp.Lib.VRamQueue\NESSharp.Lib.VRamQueue.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="chr\sp-plain.chr">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
