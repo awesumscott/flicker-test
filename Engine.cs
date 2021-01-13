@@ -1,7 +1,7 @@
 ﻿using NESSharp.Common;
 using NESSharp.Common.Input;
-using NESSharp.Common.Mapper30;
 using NESSharp.Core;
+using NESSharp.Lib.SceneManager;
 using NESSharp.Lib.VRamQueue;
 using static NESSharp.Core.AL;
 
@@ -12,33 +12,19 @@ namespace FlickerTest {
 		Title_Load,
 		Title_Step
 	}
-	public static class Engine {
-		public static Var8 nmiCount;
-		public static BankSwitchTable bankCallTable = new BankSwitchTable();
-
-		static Engine() {
-			bankCallTable.Add(new BankedSubroutine(BankedFuncs.Flicker_Load,		Rom.Bank_Flicker,		Scenes.FlickerTest.Load));
-			bankCallTable.Add(new BankedSubroutine(BankedFuncs.Flicker_Step,		Rom.Bank_Flicker,		Scenes.FlickerTest.Step));
-			bankCallTable.Add(new BankedSubroutine(BankedFuncs.Title_Load,			Rom.Bank_Title,			Scenes.Title.Load));
-			bankCallTable.Add(new BankedSubroutine(BankedFuncs.Title_Step,			Rom.Bank_Title,			Scenes.Title.Step));
-		}
+	public class Engine : Module {
+		public VByte nmiCount;
 
 		[Dependencies]
-		public static void Variables() {
-			//Modules
-			Include.Module(typeof(Scenes.Manager));
+		public void Variables() {
 			//Variables
-			nmiCount = Var8.New(zp, "NMI_Count");
-			
+			nmiCount = VByte.New(Zp, "NMI_Count");
 		}
 
-		[DataSection]
-		public static void BankCallTable() => bankCallTable.Write();
-
 		[CodeSection]
-		public static void Reset() {
+		public void Reset() {
 			NES.IRQ.Disable();
-			Use(Asm.CLD);
+			CPU6502.CLD();
 			NES.APU.FrameCounter.Set(0x40);
 			Stack.Reset();
 			NES.PPU.Control.Set(0);
@@ -50,28 +36,26 @@ namespace FlickerTest {
 			Hardware.ClearRAM();
 			Hardware.WaitForVBlank();
 
-			//TODO: move this to title, along with datasection
-			Comment("Load palettes");
-			Hardware.LoadPalettes(Palettes);
+			////TODO: move this to title, along with datasection
+			//Comment("Load palettes");
+			//Hardware.LoadPalettes(Palettes);
 
-			//GoSub(Scenes.FlickerTest.Load);
-			Scenes.Manager.LoadScene(Scenes.Manager.IDs.Title);
+			Module<SceneManager>().Load(Module<Scenes.Title>());
 			Hardware.WaitForVBlank();
 			NES.PPU.Control.Set(NES.PPU.LazyControl);
 			NES.PPU.Mask.Set(NES.PPU.LazyMask);
-			Scrolling.Update();
-			Loop.Infinite(() => {
+			ScrollUtil.Update();
+			Loop.Infinite(_ => {
 				Comment("Main Loop");
 
-				GoSub(Gamepads.Read);
+				Module<Gamepads>().Update();
 
-				//GoSub(Scenes.FlickerTest.Step);
-				Scenes.Manager.Step();
+				Module<SceneManager>().Step();
 
 				A.Set(nmiCount);
-				Loop.Do().While(() => nmiCount.Equals(A) );
-
-				Scenes.Manager.CheckLoadNeeded();
+				Loop.Do_old().While(() => nmiCount.Equals(A) );
+				
+				Module<SceneManager>().CheckLoadNeeded();
 
 				//Set shadow OAM address
 				NES.PPU.OAM.Address.Set(0x00);	//low byte of RAM address
@@ -79,28 +63,26 @@ namespace FlickerTest {
 			});
 		}
 		[Interrupt]
-		public static void NMI() {
+		public void NMI() {
 			Stack.Backup();
 
 			nmiCount++;
 
-			VRamQueue.Execute();
+			Module<VRamQueue>().Execute();
 			
 			NES.PPU.Control.Set(NES.PPU.LazyControl);
 			NES.PPU.Mask.Set(NES.PPU.LazyMask);
-			Scrolling.Update();
+			ScrollUtil.Update();
 
 			Stack.Restore();
 		}
 		[Interrupt]
-		public static void IRQ() {
-			//Just jump back into regular execution
-		}
-		[DataSection]
-		public static void Palettes() {
-			U8 black = 0x0F;
-			Raw(black, 0x27, 0x07, 0x02,		black, 0x36, 0x17, 0x0F,		black, 0x30, 0x21, 0x0F,		black, 0x27, 0x17, 0x0F);
-			Raw(black, 0x06, 0x16, 0x26,		black, 0x02, 0x38, 0x3C,		black, 0x1C, 0x15, 0x14,		black, 0x02, 0x38, 0x3C);
-		}
+		public void IRQ() {} //Just jump back into regular execution
+		//[DataSection]
+		//public void Palettes() {
+		//	U8 black = 0x0F;
+		//	Raw(black, 0x27, 0x07, 0x02,		black, 0x36, 0x17, 0x0F,		black, 0x30, 0x21, 0x0F,		black, 0x27, 0x17, 0x0F);
+		//	Raw(black, 0x06, 0x16, 0x26,		black, 0x02, 0x38, 0x3C,		black, 0x1C, 0x15, 0x14,		black, 0x02, 0x38, 0x3C);
+		//}
 	}
 }
