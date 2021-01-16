@@ -30,17 +30,17 @@ namespace FlickerTest {
 				VRamQueue.Option.Increment,
 				VRamQueue.Option.TileArray
 			);
-			Include.Module(Module<VRamQueue>(NES.zp, NES.ram));
-			Include.Module(Module<Gamepads>(NES.zp, NES.ram).Setup(1));
-			Include.Module(Module<SceneManager>(NES.zp, NES.ram).AddScene(
+			Include.Module(Module<VRamQueue>());
+			Include.Module(Module<Gamepads>().Setup(1));
+			Include.Module(Module<SceneManager>().AddScene(
 				Module<Scenes.Title>(),
 				Module<Scenes.FlickerTest>()
 			));
-			Include.Module(Module<Engine>(NES.zp, NES.ram));
+			Include.Module(Module<Engine>());
 		}
 		private static void Scenes(U8 id, Bank bank) {
-			Include.Module(Module<Scenes.Title>(NES.zp.Remainder(), NES.ram.Remainder()));
-			Include.Module(Module<Scenes.FlickerTest>(NES.zp.Remainder(), NES.ram.Remainder()));
+			Include.Module(Module<Scenes.Title>(NES.Mem.Remainder()));
+			Include.Module(Module<Scenes.FlickerTest>(NES.Mem.Remainder()));
 		}
 	}
 }
