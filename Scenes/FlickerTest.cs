@@ -230,7 +230,7 @@ namespace FlickerTest.Scenes {
 
 		[Subroutine]
 		public void DrawSkipNum() {
-			VRamQueue.Address.Set(0x2332);
+			VRamQueue.Address.SetU16(0x2332);
 			VRamQueue.TileArray.Draw_Manual(2);
 			VRamQueue.Push(() => A.Set(LabelFor(SkipOptionTile10s)[X.Set(_skipOptionIndex)]));
 			VRamQueue.Push(() => A.Set(LabelFor(SkipOptionTile1s)[X]));
