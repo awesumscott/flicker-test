@@ -66,7 +66,7 @@ namespace FlickerTest {
 		public void NMI() {
 			Stack.Backup();
 
-			nmiCount++;
+			nmiCount.Inc();
 
 			Module<VRamQueue>().Execute();
 			

@@ -103,19 +103,19 @@ namespace FlickerTest.Scenes {
 			);
 			If.Block(c => c
 				.True(_gamepad.WasPressed(NES.Button.B), () => {
-					_skipOptionIndex--;
+					_skipOptionIndex.Dec();
 					If.True(() => _skipOptionIndex.Equals(255), () => _skipOptionIndex.Set(0));	//low limit
 					GoSub(DrawSkipNum);
 				})
 				.True(_gamepad.WasPressed(NES.Button.A), () => {
-					_skipOptionIndex++;
+					_skipOptionIndex.Inc();
 					If.True(() => _skipOptionIndex.Equals(_skipOptions.Length), () => _skipOptionIndex.Set(_skipOptions.Length - 1));	//high limit
 					GoSub(DrawSkipNum);
 				})
 			);
 			Y.Set(0);
 			If.True(_gamepad.WasPressed(NES.Button.Select), () => {
-				_pattern++;
+				_pattern.Inc();
 				If.True(() => _pattern.Equals(3), () => _pattern.Set(0));
 			});
 			If.True(() => _gamepad.Pressed(NES.Button.Start), () => Module<SceneManager>().Queue(Module<Title>()));
@@ -151,7 +151,7 @@ namespace FlickerTest.Scenes {
 						Skipterate_Next();
 
 						jx.Set(z => z.Add(4));
-						_processed++;
+						_processed.Inc();
 					}).While(() => A.Set(_processed).NotEquals(60));
 				})
 				.True(() => _pattern.Equals(1), () => {
@@ -177,7 +177,7 @@ namespace FlickerTest.Scenes {
 							jy.Set(jy.Add(8));
 							jx.Set(xStart);
 						});
-						_processed++;
+						_processed.Inc();
 					}).While(() => A.Set(_processed).NotEquals(60));
 				})
 				.Else(() => {
