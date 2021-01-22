@@ -118,7 +118,7 @@ namespace FlickerTest.Scenes {
 				_pattern.Inc();
 				If.True(() => _pattern.Equals(3), () => _pattern.Set(0));
 			});
-			If.True(() => _gamepad.Pressed(NES.Button.Start), () => Module<SceneManager>().Queue(Module<Title>()));
+			If.True(_gamepad.WasPressed(NES.Button.Start), () => Module<SceneManager>().Queue(Module<Title>()));
 
 			var jx = Temp[1];
 			var jy = Temp[2];
