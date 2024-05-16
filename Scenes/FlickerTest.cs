@@ -237,8 +237,8 @@ namespace FlickerTest.Scenes {
 			VRamQueue.DonePushing();
 		}
 
-		private static readonly byte[] _skipOptions = { 1, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 49, 53, 59 }; //skipterate options for range 60 //fav: 23 (index 6)
-		private static readonly Dictionary<int, byte> _digitTiles = new() {
+		private static readonly U8[] _skipOptions = { 1, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 49, 53, 59 }; //skipterate options for range 60 //fav: 23 (index 6)
+		private static readonly Dictionary<int, U8> _digitTiles = new() {
 			{0,	0xDC},
 			{1,	0xDD},
 			{2,	0xDE},
